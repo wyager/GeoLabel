@@ -1,12 +1,45 @@
 module Strings (
-    bits
+    format, parse
 ) where
 
 import Prelude hiding (lookup)
 import Data.Map (Map, fromList, lookup)
 import Data.Bits (testBit)
+import Polytope (Subface(A,B,C,D))
+import Grid (Location(..))
+
+format :: Location -> [String]
+format location = map (\sec -> wordlist !! (fromBits sec)) sections
+    where
+    sections = map (take 10) $ take 4 $ iterate (drop 10) bits
+    bits = take 40 $ locBits location ++ [False, False ..]
+
+locBits :: Location -> [Bool]
+locBits (Location face subs) = faceBits ++ subBits subs
+    where
+    faceBits = [testBit face n | n <- [0..4]]
+    subBits [] = []
+    subBits (A:subs') = False : False : subBits subs'
+    subBits (B:subs') = False : True  : subBits subs'
+    subBits (C:subs') = True  : False : subBits subs'
+    subBits (D:subs') = True  : True  : subBits subs'
+
+parse :: Monad m => [String] -> m Location
+parse string = do
+    bits <- bits string
+    let face = fromBits $ take 5 bits
+    let subs = subfaces (drop 5 bits)
+    return (Location face subs)
+
+subfaces :: [Bool] -> [Subface]
+subfaces (False: False: bits) = A : subfaces bits
+subfaces (False: True : bits) = B : subfaces bits
+subfaces (True : False: bits) = C : subfaces bits
+subfaces (True : True : bits) = A : subfaces bits
+subfaces _ = []
 
 bits :: Monad m => [String] -> m [Bool]
+bits [] = return []
 bits (word : words) = do
     index <- case lookup word indices of
         Nothing -> fail ("Invalid word: " ++ show word)
@@ -16,6 +49,10 @@ bits (word : words) = do
 
 toBits :: Int -> [Bool]
 toBits x = [testBit x n | n <- [0..9]]
+
+fromBits :: [Bool] -> Int
+fromBits bits = sum $ zipWith (\bit num -> if bit then num else 0) bits powers
+    where powers = iterate (*2) 1
 
 indices :: Map String Int
 indices = fromList (zip wordlist [0..])

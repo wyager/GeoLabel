@@ -1,9 +1,9 @@
-module Point (Point, (<+>), (<->), (<.>), scale) where
+module Point (Point(..), (<+>), (<->), (<.>), scale, kick, unit) where
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
 
-data Point = Point (Length Double) (Length Double) (Length Double)
+data Point = Point (Length Double) (Length Double) (Length Double) deriving Show
 
 (<+>) :: Point -> Point -> Point
 (Point a b c) <+> (Point x y z) = Point (a + x) (b + y) (c + z)
@@ -14,3 +14,15 @@ data Point = Point (Length Double) (Length Double) (Length Double)
 
 scale :: Dimensionless Double -> Point -> Point
 scale s (Point a b c) = Point (s * a) (s * b) (s * c)
+
+kick :: Point -> Point -> Point
+kick point destination = point <+> delta
+    where
+    delta = small (destination <-> point)
+
+small :: Point -> Point
+small vector = unit vector
+
+unit :: Point -> Point
+unit vector = scale (1.0 *~ meter / length) vector
+    where length = sqrt (vector <.> vector)
