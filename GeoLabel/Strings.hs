@@ -44,7 +44,7 @@ bitsToLocation bits = Location (int faceBits) (subfaces subfaceBits)
     subfaces (False: False: bits) = A : subfaces bits
     subfaces (False: True : bits) = B : subfaces bits
     subfaces (True : False: bits) = C : subfaces bits
-    subfaces (True : True : bits) = A : subfaces bits
+    subfaces (True : True : bits) = D : subfaces bits
     subfaces _ = []
 
 int :: [Bool] -> Int

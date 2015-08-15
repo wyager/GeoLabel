@@ -6,6 +6,7 @@ module GeoLabel.Geometry.Point (
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
+import Debug.Trace (trace)
 
 -- | A vector of three things.
 data V3 a = V3 a a a deriving Show
@@ -29,7 +30,7 @@ scale :: Dimensionless Double -> Point -> Point
 scale s (V3 a b c) = V3 (s * a) (s * b) (s * c)
 
 kick :: Point -> Point -> Point
-kick point destination = point <+> delta
+kick point destination = trace (show (destination <-> point)) point <+> delta
     where
     delta = small (destination <-> point)
 
