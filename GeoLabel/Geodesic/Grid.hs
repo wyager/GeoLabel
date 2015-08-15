@@ -20,7 +20,8 @@ locationOf point (Polyhedron faces) = Location index subfaces
     where
     Just index = findIndex (`contains` point) faces
     face = faces !! index
-    subfaces = explore (qt face) point
+    -- This gives us a resolution of about the area of a dinner plate
+    subfaces = take 25 $ explore (qt face) point
 
 explore :: Polygon face => QT face -> Point -> [Subface]
 explore (QT f a b c d) point

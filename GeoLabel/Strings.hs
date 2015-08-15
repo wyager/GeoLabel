@@ -13,7 +13,7 @@ format :: Location -> String
 format location = intercalate " " words
     where
     bits = locationToBits location
-    sections = map (take 11) . iterate (drop 11) $ bits
+    sections = take 5 $ map (take 11) . iterate (drop 11) $ bits
     words = map word sections
 
 parse :: Monad m => String -> m Location
