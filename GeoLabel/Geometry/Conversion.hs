@@ -1,4 +1,4 @@
-module Geometry (
+module GeoLabel.Geometry.Conversion (
     polar,
     cartesian
 ) where
@@ -6,8 +6,8 @@ module Geometry (
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
 
-import Point (Point(..), (<.>))
-import Polar (Polar(..))
+import GeoLabel.Geometry.Point (Point(..), (<.>))
+import GeoLabel.Geometry.Polar (Polar(..))
 
 polar :: Point -> Polar
 polar point@(Point x y z) = Polar r theta phi

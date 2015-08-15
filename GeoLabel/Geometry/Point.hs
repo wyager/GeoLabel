@@ -1,4 +1,6 @@
-module Point (Point(..), (<+>), (<->), (<.>), scale, kick, unit) where
+module GeoLabel.Geometry.Point (
+    Point(..), (<+>), (<->), (<.>), scale, kick, unit
+) where
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
@@ -21,7 +23,7 @@ kick point destination = point <+> delta
     delta = small (destination <-> point)
 
 small :: Point -> Point
-small vector = unit vector
+small vector = scale (0.01 *~ one) (unit vector) -- 1 centimeter
 
 unit :: Point -> Point
 unit vector = scale (1.0 *~ meter / length) vector

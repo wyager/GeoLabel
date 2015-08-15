@@ -1,4 +1,4 @@
-module Polar (Polar(..)) where
+module GeoLabel.Geometry.Polar (Polar(..)) where
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude

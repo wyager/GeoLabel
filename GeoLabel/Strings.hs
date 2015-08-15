@@ -1,21 +1,30 @@
-module Strings (
+module GeoLabel.Strings (
     format, parse
 ) where
 
 import Prelude hiding (lookup)
-import Data.Map (Map, fromList, lookup)
+import Data.Map (Map, fromList, lookup, (!))
 import Data.Bits (testBit)
-import Polytope (Subface(A,B,C,D))
-import Grid (Location(..))
+import Data.List (intercalate)
+import GeoLabel.Geometry.QuadTree (Subface(A,B,C,D))
+import GeoLabel.Unit.Location (Location(..))
 
-format :: Location -> [String]
-format location = map (\sec -> wordlist !! (fromBits sec)) sections
+format :: Location -> String
+format location = intercalate " " words
     where
-    sections = map (take 10) $ take 4 $ iterate (drop 10) bits
-    bits = take 40 $ locBits location ++ [False, False ..]
+    bits = locationToBits location
+    sections = map (take 11) . iterate (drop 11) $ bits
+    words = map word sections
 
-locBits :: Location -> [Bool]
-locBits (Location face subs) = faceBits ++ subBits subs
+parse :: Monad m => String -> m Location
+parse string = do
+    let strings = words string
+    bitses <- mapM bits strings
+    let bits = concat bitses
+    return (bitsToLocation bits)
+
+locationToBits :: Location -> [Bool]
+locationToBits (Location face subfaces) = faceBits ++ subBits subfaces
     where
     faceBits = [testBit face n | n <- [0..4]]
     subBits [] = []
@@ -24,38 +33,36 @@ locBits (Location face subs) = faceBits ++ subBits subs
     subBits (C:subs') = True  : False : subBits subs'
     subBits (D:subs') = True  : True  : subBits subs'
 
-parse :: Monad m => [String] -> m Location
-parse string = do
-    bits <- bits string
-    let face = fromBits $ take 5 bits
-    let subs = subfaces (drop 5 bits)
-    return (Location face subs)
+bitsToLocation :: [Bool] -> Location
+bitsToLocation bits = Location (int faceBits) (subfaces subfaceBits)
+    where
+    faceBits = take 5 bits
+    subfaceBits = drop 5 bits
+    subfaces (False: False: bits) = A : subfaces bits
+    subfaces (False: True : bits) = B : subfaces bits
+    subfaces (True : False: bits) = C : subfaces bits
+    subfaces (True : True : bits) = A : subfaces bits
+    subfaces _ = []
 
-subfaces :: [Bool] -> [Subface]
-subfaces (False: False: bits) = A : subfaces bits
-subfaces (False: True : bits) = B : subfaces bits
-subfaces (True : False: bits) = C : subfaces bits
-subfaces (True : True : bits) = A : subfaces bits
-subfaces _ = []
+int :: [Bool] -> Int
+int [] = 0
+int (x:xs) = 2 * int xs + if x then 1 else 0
 
-bits :: Monad m => [String] -> m [Bool]
-bits [] = return []
-bits (word : words) = do
-    index <- case lookup word indices of
-        Nothing -> fail ("Invalid word: " ++ show word)
-        Just index -> return index
-    tail <- bits words
-    return (toBits index ++ tail)
+word :: [Bool] -> String
+word bits
+    | length bits /= 11 = error "Incorrect bit length"
+    | otherwise         = wordmap ! int bits
 
-toBits :: Int -> [Bool]
-toBits x = [testBit x n | n <- [0..9]]
-
-fromBits :: [Bool] -> Int
-fromBits bits = sum $ zipWith (\bit num -> if bit then num else 0) bits powers
-    where powers = iterate (*2) 1
+bits :: Monad m => String -> m [Bool]
+bits word = case lookup word indices of
+    Nothing -> fail (word ++ " isn't a valid word")
+    Just index -> return [testBit index n | n <- [0..10]]
 
 indices :: Map String Int
 indices = fromList (zip wordlist [0..])
+
+wordmap :: Map Int String
+wordmap = fromList (zip [0..] wordlist)
 
 wordlist :: [String]
 wordlist = [

@@ -1,32 +1,15 @@
-module Conversion (
-    Latlon(..), latlon,
-    Location(..), location
+module GeoLabel.Geodesic.Earth (
+    earth, radii
 ) where
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
-import Polar (Polar(..))
-import Point (Point(..))
-import Geometry (polar, cartesian)
-import Grid (Location(..), locate, pointTo)
-import Polytope (Triangle(..), Icosahedron, polyhedron)
+import GeoLabel.Geometry.Point (Point(..))
+import GeoLabel.Polytope.Triangle (Triangle(..))
+import GeoLabel.Polytope.Polyhedron (Polyhedron(..))
 
-data Latlon = Latlon {lat :: Angle Double, lon :: Angle Double} deriving Show
-
-latlon :: Location -> Latlon
-latlon location = Latlon theta phi
-    where 
-    Polar r theta phi = polar point
-    point = pointTo location geodesic
-
-location :: Latlon -> Location
-location (Latlon lat lon) = locate point geodesic
-    where
-    point = cartesian polar
-    polar = Polar (1 *~ earths) lat lon
-
-geodesic :: Icosahedron
-geodesic = polyhedron faces
+earth :: Polyhedron Triangle
+earth = Polyhedron faces
 
 faces :: [Triangle]
 faces = [Triangle (vert a) (vert b) (vert c) | (a,b,c) <- indices]
@@ -54,7 +37,7 @@ faces = [Triangle (vert a) (vert b) (vert c) | (a,b,c) <- indices]
                (9,  8,  1 )]
 
 vertices :: [Point]
-vertices = [Point (x *~ earths) (y *~ earths) (z *~ earths) | (x,y,z) <- raw]
+vertices = [Point (x *~ radii) (y *~ radii) (z *~ radii) | (x,y,z) <- raw]
    where raw = [(-1,       golden,    0   ),
                 ( 1,       golden,    0   ),
                 (-1,      -golden,    0   ),
@@ -71,5 +54,5 @@ vertices = [Point (x *~ earths) (y *~ earths) (z *~ earths) | (x,y,z) <- raw]
 golden :: Double
 golden = 1.61803398874989484820458
 
-earths :: Unit DLength Double
-earths = prefix 6370000 meter
+radii :: Unit DLength Double
+radii = prefix 6.371 (mega meter)
