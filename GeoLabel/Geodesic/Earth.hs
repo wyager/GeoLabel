@@ -4,7 +4,7 @@ module GeoLabel.Geodesic.Earth (
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
-import GeoLabel.Geometry.Point (Point(..))
+import GeoLabel.Geometry.Point (Point, V3(..))
 import GeoLabel.Polytope.Triangle (Triangle(..))
 import GeoLabel.Polytope.Polyhedron (Polyhedron(..))
 
@@ -37,7 +37,7 @@ faces = [Triangle (vert a) (vert b) (vert c) | (a,b,c) <- indices]
                (9,  8,  1 )]
 
 vertices :: [Point]
-vertices = [Point (x *~ radii) (y *~ radii) (z *~ radii) | (x,y,z) <- raw]
+vertices = [V3 (x *~ radii) (y *~ radii) (z *~ radii) | (x,y,z) <- raw]
    where raw = [(-1,       golden,    0   ),
                 ( 1,       golden,    0   ),
                 (-1,      -golden,    0   ),

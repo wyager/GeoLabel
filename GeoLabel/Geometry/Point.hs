@@ -1,31 +1,32 @@
 module GeoLabel.Geometry.Point (
-    Point(..), (<+>), (<->), (<.>), (<%>), scale, kick, unit,
-    Bivector(..)
+    V3(..), (<+>), (<->), (<.>), (<%>), scale, kick, unit,
+    Point,
+    Bivector
 ) where
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
 
+-- | A vector of three things.
 data V3 a = V3 a a a deriving Show
-
-data Point = Point (Length Double) (Length Double) (Length Double) 
-    deriving Show
+-- | A vector in R³.
+type Point = V3 (Length Double)
+-- | A bivector for R³.
 -- Turns out cross products are super weird. 
 -- https://en.wikipedia.org/wiki/Exterior_algebra
-data Bivector = Bivector (Area Double) (Area Double) (Area Double)
-    deriving Show
+type Bivector = V3 (Area Double)
 
-(<+>) :: Point -> Point -> Point
-(Point a b c) <+> (Point x y z) = Point (a + x) (b + y) (c + z)
-(<->) :: Point -> Point -> Point
-(Point a b c) <-> (Point x y z) = Point (a - x) (b - y) (c - z)
-(<.>) :: Point -> Point -> Area Double
-(Point a b c) <.> (Point x y z) = (a * x) + (b * y) + (c * z)
-(<%>) :: Point -> Point -> Bivector
-(Point a b c) <%> (Point x y z) = Bivector (b*z - c*y) (c*x - a*z) (a*y - b*x)
+-- | Vector Addition
+(V3 a b c) <+> (V3 x y z) = V3 (a + x) (b + y) (c + z)
+-- | Vector Subtraction
+(V3 a b c) <-> (V3 x y z) = V3 (a - x) (b - y) (c - z)
+-- | Dot Product
+(V3 a b c) <.> (V3 x y z) = (a * x) + (b * y) + (c * z)
+-- | Cross Product
+(V3 a b c) <%> (V3 x y z) = V3 (b*z - c*y) (c*x - a*z) (a*y - b*x)
 
 scale :: Dimensionless Double -> Point -> Point
-scale s (Point a b c) = Point (s * a) (s * b) (s * c)
+scale s (V3 a b c) = V3 (s * a) (s * b) (s * c)
 
 kick :: Point -> Point -> Point
 kick point destination = point <+> delta
