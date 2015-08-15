@@ -10,7 +10,7 @@ qt :: Polygon face => face -> QT face
 qt face = QT face (qt a) (qt b) (qt c) (qt d)
     where (a,b,c,d) = split face
 
-data Subface = A | B | C | D deriving Show
+data Subface = A | B | C | D deriving (Show, Eq, Ord)
 
 subface :: Polygon face => face -> Subface -> face
 subface face A = let (a,_,_,_) = split face in a

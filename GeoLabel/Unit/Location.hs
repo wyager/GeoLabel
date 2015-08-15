@@ -6,4 +6,4 @@ import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
 import GeoLabel.Geometry.QuadTree (Subface)
 
-data Location = Location Int [Subface] deriving Show
+data Location = Location Int [Subface] deriving (Show, Eq, Ord)
