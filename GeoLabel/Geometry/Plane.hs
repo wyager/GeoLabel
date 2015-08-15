@@ -27,4 +27,4 @@ side (Plane x y z d) point
     where
     sum = ((V3 x y z) <.> point) - d
 
-data Side = Behind | Inside | Infront
+data Side = Behind | Inside | Infront deriving (Show, Eq)
