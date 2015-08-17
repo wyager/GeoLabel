@@ -1,12 +1,11 @@
 module GeoLabel.Geometry.Point (
-    V3(..), (<+>), (<->), (<.>), (<%>), scale, kick, unit,
+    V3(..), (<+>), (<->), (<.>), (<%>), scale, kick, unit, lengthOf,
     Point,
     Bivector
 ) where
 
 import Prelude () -- Don't import anything from standard prelude
-import Numeric.Units.Dimensional.Prelude
-import Debug.Trace (trace)
+import Numeric.Units.Dimensional.Prelude hiding (length)
 
 -- | A vector of three things.
 data V3 a = V3 a a a deriving Show
@@ -30,7 +29,7 @@ scale :: Dimensionless Double -> Point -> Point
 scale s (V3 a b c) = V3 (s * a) (s * b) (s * c)
 
 kick :: Point -> Point -> Point
-kick point destination = trace (show (destination <-> point)) point <+> delta
+kick point destination = point <+> delta
     where
     delta = small (destination <-> point)
 
@@ -38,5 +37,7 @@ small :: Point -> Point
 small vector = scale (0.01 *~ one) (unit vector) -- 1 centimeter
 
 unit :: Point -> Point
-unit vector = scale (1.0 *~ meter / length) vector
-    where length = sqrt (vector <.> vector)
+unit vector = scale (1.0 *~ meter / lengthOf vector) vector
+
+lengthOf :: Point -> Length Double
+lengthOf vector = sqrt (vector <.> vector)

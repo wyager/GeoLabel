@@ -1,5 +1,5 @@
 module GeoLabel.Geodesic.Earth (
-    earth, radii
+    earth, radii, earthRadius
 ) where
 
 import Prelude () -- Don't import anything from standard prelude
@@ -56,3 +56,6 @@ golden = 1.61803398874989484820458
 
 radii :: Unit DLength Double
 radii = prefix 6.371 (mega meter)
+
+earthRadius :: Length Double
+earthRadius = 1 *~ radii
