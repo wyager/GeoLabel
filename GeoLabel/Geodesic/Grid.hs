@@ -6,7 +6,7 @@ import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
 import Data.List (findIndex)
 import GeoLabel.Polytope.Polyhedron (Polyhedron(..))
-import GeoLabel.Polytope.Polygon (Polygon, centroid, contains)
+import GeoLabel.Polytope.Polygon (Polygon, centroid, contains, vertices)
 import GeoLabel.Geometry.QuadTree (QT(..), qt, Subface(A,B,C,D), subfaces)
 import GeoLabel.Geometry.Point (Point, kick, unit)
 import GeoLabel.Unit.Location (Location(..))
@@ -29,6 +29,9 @@ explore (QT f a b c d) point
     | within b = B : explore b point
     | within c = C : explore c point
     | within d = D : explore d point
-    | otherwise = error $ show (unit (centroid f)) ++ "  :  " ++ show (unit point)
+    | otherwise = error $ pretty f ++ "\n  :  \n" ++ show (unit point)
     | otherwise = explore (QT f a b c d) (kick point (centroid f))
     where within (QT f _ _ _ _) = f `contains` point
+
+pretty :: Polygon face => face -> String
+pretty f = concat [show (unit v) ++ "\n" | v <- vertices f]

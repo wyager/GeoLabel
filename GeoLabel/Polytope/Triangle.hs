@@ -4,7 +4,7 @@ module GeoLabel.Polytope.Triangle (
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
-import GeoLabel.Polytope.Polygon (Polygon(split, centroid, contains))
+import GeoLabel.Polytope.Polygon (Polygon, split, centroid, contains, vertices)
 import GeoLabel.Geometry.Point (V3(..), Point, scale, (<+>))
 import GeoLabel.Geometry.Plane (Plane, plane, Side(Inside), side)
 import Numeric.Units.Dimensional ((*~), one)
@@ -27,5 +27,6 @@ instance Polygon Triangle where
         ab = plane a b zero
         ac = plane a c zero
         bc = plane b c zero
-        corner `onSameSideOf` plane = side plane point == Inside ||
+        corner `onSameSideOf` plane = -- side plane point == Inside ||
                                       side plane point == side plane corner
+    vertices (Triangle a b c) = [a,b,c]
