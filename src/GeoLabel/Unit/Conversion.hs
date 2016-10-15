@@ -8,7 +8,7 @@ import Numeric.Units.Dimensional.Prelude
 import GeoLabel.Geometry.Polar (Polar(..))
 import GeoLabel.Geometry.Conversion (polar, cartesian)
 import GeoLabel.Geodesic.Grid (pointOf, locationOf)
-import GeoLabel.Geodesic.Earth (earth, radii)
+import GeoLabel.Geodesic.Earth (earth, earthRadius)
 import GeoLabel.Unit.Location (Location(..))
 import GeoLabel.Unit.Latlon (Latlon(..))
 
@@ -22,4 +22,4 @@ location :: Latlon -> Location
 location (Latlon lat lon) = locationOf point earth
     where
     point = cartesian polar
-    polar = Polar (1 *~ radii) lat lon
+    polar = Polar earthRadius lat lon

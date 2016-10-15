@@ -6,10 +6,11 @@ module GeoLabel.Geometry.Plane (
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
 import GeoLabel.Geometry.Point (V3(..), Point, Bivector, (<->), (<%>), (<.>))
+import GeoLabel.Real (R)
 
 -- | Represents an equation of the form xX + yY + zZ = d
-data Plane = Plane { x :: Area Double, y :: Area Double,
-                     z :: Area Double, d :: Volume Double }
+data Plane = Plane { x :: Area R, y :: Area R,
+                     z :: Area R, d :: Volume R }
 
 plane :: Point -> Point -> Point -> Plane
 plane a b c = Plane x y z d

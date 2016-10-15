@@ -2,7 +2,7 @@
 
 module Main (main) where
 
-import GeoLabel (toString, fromString', toLatlon)
+import GeoLabel (toString, fromString')
 import GeoLabel.Strings (format, parse)
 import GeoLabel.Strings.Wordlist (wordlist)
 import GeoLabel.Geometry.QuadTree (Subface(A,B,C,D))
@@ -16,6 +16,16 @@ import Numeric.Units.Dimensional.SIUnits (meter)
 import System.Exit (exitFailure)
 import Test.QuickCheck (quickCheckResult, Result(..), forAll, vector, vectorOf, elements, choose)
 import Data.Maybe (fromJust)
+import GeoLabel.Real (R)
+import Data.Number.BigFloat (BigFloat, Prec50, Epsilon)
+import System.Random (Random, randomR, random)
+instance Epsilon e => Random (BigFloat e) where
+    randomR (a,b) g = (c,g')
+        where
+        (d,g') = randomR (realToFrac a :: Double, realToFrac b) g
+        c = realToFrac d
+    random g = (realToFrac (d :: Double), g')
+        where (d,g') = random g
 
 main :: IO ()
 main = do
@@ -47,7 +57,7 @@ coordTest = forAll (choose (0.0, pi)) $ \lat ->
     forAll (choose (0.0, pi)) $ \lon ->
         acceptableError (lat, lon) (fromString' . toString $ (lat, lon))
 
-acceptableError :: (Double, Double) -> (Double, Double) -> Bool
+acceptableError :: (R, R) -> (R, R) -> Bool
 acceptableError (a1, b1) (a2, b2) = difference <= 0.2 *~ meter
     where
     point1 = cartesian (Polar earthRadius (a1 *~ one) (b1 *~ one))

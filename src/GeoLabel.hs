@@ -1,8 +1,4 @@
 module GeoLabel (
-    Latlon(..), latlon, 
-    Location(..), location, 
-    format, parse,
-    toLatlon, fromLatlon,
     toString, fromString, fromString'
 ) where
 
@@ -12,20 +8,18 @@ import GeoLabel.Strings (parse, format)
 import GeoLabel.Unit.Conversion (latlon, location)
 import GeoLabel.Unit.Latlon (Latlon(..))
 import GeoLabel.Unit.Location(Location)
+import GeoLabel.Real (R)
 
-toLatlon :: (Double, Double) -> Latlon
-toLatlon (lat, lon) = Latlon (lat *~ one) (lon *~ one)
 
-fromLatlon :: Latlon -> (Double, Double)
-fromLatlon (Latlon lat lon) = (lat /~ one, lon /~ one)
-
-toString :: (Double, Double) -> String
+toString :: (R, R) -> String
 toString = format . location . toLatlon
+    where toLatlon (lat,lon) = Latlon (lat *~ one) (lon *~ one)
 
-fromString :: Monad m => String -> m (Double, Double)
-fromString string = fmap (fromLatlon . latlon) (parse string)
+fromString :: Monad m => String -> m (R, R)
+fromString = fmap (fromLatlon . latlon) . parse
+    where fromLatlon (Latlon lat lon) = (lat /~ one, lon /~ one)
 
-fromString' :: String -> (Double, Double)
+fromString' :: String -> (R, R)
 fromString' string = case fromString string of
     Just coords -> coords
     Nothing -> error "String parse failed"

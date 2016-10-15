@@ -4,5 +4,6 @@ module GeoLabel.Unit.Latlon (
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude
+import GeoLabel.Real (R)
 
-data Latlon = Latlon {lat :: Angle Double, lon :: Angle Double} deriving Show
+data Latlon = Latlon {lat :: Angle R, lon :: Angle R} deriving Show

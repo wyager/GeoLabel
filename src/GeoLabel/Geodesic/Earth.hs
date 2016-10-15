@@ -1,5 +1,7 @@
+{-# LANGUAGE DataKinds #-}
+
 module GeoLabel.Geodesic.Earth (
-    earth, radii, earthRadius
+    earth, earthRadius
 ) where
 
 import Prelude () -- Don't import anything from standard prelude
@@ -7,6 +9,7 @@ import Numeric.Units.Dimensional.Prelude
 import GeoLabel.Geometry.Point (Point, V3(..))
 import GeoLabel.Polytope.Triangle (Triangle(..))
 import GeoLabel.Polytope.Polyhedron (Polyhedron(..))
+import GeoLabel.Real (R)
 
 earth :: Polyhedron Triangle
 earth = Polyhedron faces
@@ -37,7 +40,7 @@ faces = [Triangle (vert a) (vert b) (vert c) | (a,b,c) <- indices]
                (9,  8,  1 )]
 
 vertices :: [Point]
-vertices = [V3 (x *~ radii) (y *~ radii) (z *~ radii) | (x,y,z) <- raw]
+vertices = [V3 ((x *~ one) * earthRadius) ((y *~ one) * earthRadius) ((z *~ one) * earthRadius) | (x,y,z) <- raw]
    where raw = [(-1,       golden,    0   ),
                 ( 1,       golden,    0   ),
                 (-1,      -golden,    0   ),
@@ -51,11 +54,8 @@ vertices = [V3 (x *~ radii) (y *~ radii) (z *~ radii) | (x,y,z) <- raw]
                 (-golden,  0,      -1     ),
                 (-golden,  0,       1     )]
 
-golden :: Double
+golden :: R
 golden = 1.61803398874989484820458
 
-radii :: Unit DLength Double
-radii = prefix 6.371 (mega meter)
-
-earthRadius :: Length Double
-earthRadius = 1 *~ radii
+earthRadius :: Length R
+earthRadius = 6.371 *~ (mega meter)

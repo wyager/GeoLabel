@@ -1,3 +1,4 @@
+{-# LANGUAGE TypeFamilies #-}
 module GeoLabel.Geometry.Point (
     V3(..), (<+>), (<->), (<.>), (<%>), scale, kick, unit, lengthOf,
     Point,
@@ -6,15 +7,16 @@ module GeoLabel.Geometry.Point (
 
 import Prelude () -- Don't import anything from standard prelude
 import Numeric.Units.Dimensional.Prelude hiding (length)
+import GeoLabel.Real (R)
 
 -- | A vector of three things.
 data V3 a = V3 a a a deriving Show
 -- | A vector in R³.
-type Point = V3 (Length Double)
+type Point = V3 (Length R)
 -- | A bivector for R³.
 -- Turns out cross products are super weird. 
 -- https://en.wikipedia.org/wiki/Exterior_algebra
-type Bivector = V3 (Area Double)
+type Bivector = V3 (Area R)
 
 -- | Vector Addition
 (V3 a b c) <+> (V3 x y z) = V3 (a + x) (b + y) (c + z)
@@ -25,7 +27,7 @@ type Bivector = V3 (Area Double)
 -- | Cross Product
 (V3 a b c) <%> (V3 x y z) = V3 (b*z - c*y) (c*x - a*z) (a*y - b*x)
 
-scale :: Dimensionless Double -> Point -> Point
+scale :: Dimensionless R -> Point -> Point
 scale s (V3 a b c) = V3 (s * a) (s * b) (s * c)
 
 kick :: Point -> Point -> Point
@@ -39,5 +41,5 @@ small vector = scale (0.01 *~ one) (unit vector) -- 1 centimeter
 unit :: Point -> Point
 unit vector = scale (1.0 *~ meter / lengthOf vector) vector
 
-lengthOf :: Point -> Length Double
+lengthOf :: Point -> Length R
 lengthOf vector = sqrt (vector <.> vector)
